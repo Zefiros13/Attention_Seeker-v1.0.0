@@ -1,0 +1,42 @@
+﻿
+@model IEnumerable<Attention_Seeker.Models.ApplicationUser>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div style="width:50%; height:100%; padding: 20px; display:inline-block; vertical-align:top;">
+    <table id="users" class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr class="table-primary">
+                    <td>@Html.ActionLink(user.UserName, "ReadOnlyProfile", "Users", new { id = user.Id }, new { @class = "btn btn-primary" })</td>
+                    <td>@user.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="width:10%; display:inline-block;"></div>
+
+@Html.Action("_Connections")
+@Html.Action("_CurrentlyPaired")
+
+
+
+    @section scripts
+{
+        <script>
+            $(document).ready(function () {
+                $("#users").DataTable();
+            });
+        </script>
+    }
+

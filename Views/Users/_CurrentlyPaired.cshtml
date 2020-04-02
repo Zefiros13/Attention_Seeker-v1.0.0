@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNet.Identity;
+
+
+<div style="width:20%; height:100%; padding: 20px; display:inline-block; vertical-align:top; position: absolute; top: 29%; left: 75%; height: 30px; height: 385px; max-height: 385px; overflow-x: hidden; border:2px solid #B58900; border-radius: 5px;">
+    @if (Model.Connections.Count == 0)
+    {
+        <label style="color:#B58900;">You don't have any connection.</label>
+    }
+    else
+    {
+        foreach (var connection in Model.Connections)
+        {
+            if (connection.ConnectionSender != null)
+            {
+                if (connection.ConnectionSender.Id == System.Web.HttpContext.Current.User.Identity.GetUserId())
+                {
+                    <label style="color:#B58900;">Connected with @connection.ConnectionReceiver.UserName </label> <br />
+                }
+                else if (connection.ConnectionReceiver.Id == System.Web.HttpContext.Current.User.Identity.GetUserId())
+                {
+                    <label style="color:#B58900;">Connected with @connection.ConnectionSender.UserName </label> <br />
+                }
+            }
+        }
+    }
+</div>

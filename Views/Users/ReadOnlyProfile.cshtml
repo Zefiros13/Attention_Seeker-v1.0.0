@@ -1,0 +1,165 @@
+﻿@using Microsoft.AspNet.Identity;
+
+@model Attention_Seeker.ViewModels.UserConnectionViewModel
+@{
+    ViewBag.Title = "ReadOnlyProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div>
+        <div style="width:50%; height:100%; padding: 20px; display:inline-block; vertical-align:top;">
+            <h1>@Model.User.UserName</h1>
+            <p><b>@Model.User.Name</b></p>
+            <p>@Model.User.Bio</p>
+            <br />
+
+            @using (Html.BeginForm("ReadOnlyProfile", "Users", "Profile/{id}", FormMethod.Post))
+            {
+                if (Model.Connection.WaitingFlag == false && Model.Connection.ApproveFlag == true)
+                {
+                    <div id="cancelDiv" style="display:block;">
+                        <label>Currently connected with @Model.User.UserName</label>
+                        <button type="submit" name="conne" value="disconnect" id="cancelConnection" onclick="cancelConnection()" class="btn btn-primary">Disconnect?</button>
+                    </div>
+                }
+
+                if (Model.Connection.WaitingFlag == false && Model.Connection.ApproveFlag == false)
+                {
+                    <div id="askDiv" style="display:block;">
+                        <button type="submit" name="conne" value="ask" id="askForConnection" onclick="askClick()" class="btn btn-primary">Connect with @Model.User.UserName</button>
+                    </div>
+                }
+
+                if (Model.Connection.WaitingFlag == true && Model.Connection.ApproveFlag == false)
+                {
+                    if (Model.Connection.ConnectionSender != null)
+                    {
+                        <div style="margin: 5px; width:200px; height: 70px; background-color: #073642; border: 1px solid #B58900; border-radius:5px; text-align:center; padding:15px; margin-right:15px;">
+                            <label>@Model.Connection.ConnectionSender.UserName asking for connection?</label> <br />
+                            @Html.ActionLink("Approve", "Approve", new { Id = Model.Connection.Id }, new { @class = "btn btn-primary" })
+                            @Html.ActionLink("Reject", "Reject", new { id = Model.Connection.Id }, new { @class = "btn btn-primary" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="connectionWaitingDiv" style="display:block;">
+                            <label>Connection is sent to @Model.User.UserName, waiting for response.</label>
+                            <button type="submit" name="conne" value="cancel" id="connectionWaiting" onclick="cancelWaiting()" class="btn btn-primary">Cancel?</button>
+                        </div>
+                    }
+                }
+            }
+
+            @if (Model.User.Id == System.Web.HttpContext.Current.User.Identity.GetUserId())
+            {
+                <div style="color: #B58900;">
+                    This is your profile.
+                </div>
+
+                <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+                <script>
+                    $("#cancelDiv").hide();
+                    $("#askDiv").hide();
+                    $("#connectionWaitingDiv").hide();
+                    $("#audioDiv").hide();
+                </script>
+            }
+
+
+        </div>
+
+        @if (Model.Connection.WaitingFlag == false && Model.Connection.ApproveFlag == true)
+        {
+            <div style="width:10%; display:inline-block;"></div>
+
+            <div id="audioDiv" style="width:35%; height:100%; padding: 20px; display:inline-block; text-align:center;">
+                <select id="selection" style=" box-shadow: 0px 0px 30px #00b456; border: solid 1px rgba(0, 77, 37, 0.01); border-radius: 30px;">
+                    <option value="">- Select sound -</option>
+                    <option value="~/Media/Sounds/Bike.mp3">Bike bell</option>
+                    <option value="~/Media/Sounds/Christmas.mp3">Christmas bell</option>
+                    <option value="~/Media/Sounds/Christmas2.mp3">Christmas song</option>
+                    <option value="~/Media/Sounds/Church.mp3">Church bell</option>
+                    <option value="~/Media/Sounds/Gleam.mp3">Gleam bell</option>
+                    <option value="~/Media/Sounds/HandBell.mp3">Hand bell</option>
+                    <option value="~/Media/Sounds/Servant.mp3">Servant bell</option>
+                    <option value="~/Media/Sounds/VideoGame.mp3">Video game</option>
+                    <option value="~/Media/Sounds/MachineGun.mp3">Machine gun</option>
+                </select>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <button id="play" style="text-align:center;"><img src="~/Media/Images/Gumb11.jpg" style="width:130px; height:100px; margin:-10px;" /></button>
+                <button id="pause" style="text-align:center; display:none;"><img src="~/Media/Images/Gumb11.jpg" style="width:130px; height:100px; margin:-10px;" /></button>
+                <br />
+                <br />
+                <audio id="player" controls="controls" class="hidden">
+                    <source id="mp3_src" type="audio/mp3" />Your browser does not support audio element.
+                </audio>
+            </div>
+
+
+
+            <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+            <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+            <script type="text/javascript" src="~/signalr/hubs"></script>
+            <script>
+                $(function () {
+                    var audioHub = $.connection.audioHub;
+                    audioHub.client.sendConnection = function () {
+                        $("#label").val(" has asked you for connection?");
+                    };
+                    $.connection.hub.start().done(function () {
+                        alert("connection start");
+                        $('#btnSendMessage').click(function () {
+                            audioHub.server.playAudio();
+                            $(document).ready(function () {
+
+                                $('#selection').on('change', function () {
+                                    change($(this).val());
+                                });
+
+                            });
+
+
+                            function change(sourceUrl) {
+                                var audio = document.getElementById("player");
+                                var source = document.getElementById("mp3_src");
+
+                                $("#play").show();
+                                $("#pause").hide();
+
+                                $('#play').on('click', function () {
+                                    if (sourceUrl) {
+                                        source.src = sourceUrl;
+                                        audio.load();
+                                        audio.play();
+                                        $("#play").hide();
+                                        $("#pause").show();
+                                    }
+                                });
+
+                                $('#pause').on('click', function () {
+                                    audio.pause();
+                                    $("#play").show();
+                                    $("#pause").hide();
+                                });
+
+                            }
+                        });
+                    });
+                });
+            </script>
+        }
+    </div>
+        @Html.HiddenFor(m => m.Connection.Id)
+
+            
+
+@section scripts
+{
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="~/Scripts/AudioPlayer.js"> </script>
+}
