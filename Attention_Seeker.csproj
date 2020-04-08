@@ -214,6 +214,18 @@
     <Compile Include="Migrations\202003310252443_AddDateCreatedColumnToUsersConnectionsTable.Designer.cs">
       <DependentUpon>202003310252443_AddDateCreatedColumnToUsersConnectionsTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202004080543343_AddPathToUsersTable.cs" />
+    <Compile Include="Migrations\202004080543343_AddPathToUsersTable.Designer.cs">
+      <DependentUpon>202004080543343_AddPathToUsersTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004080930549_ChangeUsersBioLengthTo256.cs" />
+    <Compile Include="Migrations\202004080930549_ChangeUsersBioLengthTo256.Designer.cs">
+      <DependentUpon>202004080930549_ChangeUsersBioLengthTo256.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.cs" />
+    <Compile Include="Migrations\202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.Designer.cs">
+      <DependentUpon>202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -501,7 +513,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\MyScripts\navbarScripts.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -545,6 +556,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Media\ProfilePictures\" />
     <Folder Include="Views\Connection\" />
   </ItemGroup>
   <ItemGroup>
@@ -575,6 +587,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003310252443_AddDateCreatedColumnToUsersConnectionsTable.resx">
       <DependentUpon>202003310252443_AddDateCreatedColumnToUsersConnectionsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004080543343_AddPathToUsersTable.resx">
+      <DependentUpon>202004080543343_AddPathToUsersTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004080930549_ChangeUsersBioLengthTo256.resx">
+      <DependentUpon>202004080930549_ChangeUsersBioLengthTo256.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.resx">
+      <DependentUpon>202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

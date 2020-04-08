@@ -21,8 +21,10 @@ namespace Attention_Seeker.Models
         [StringLength(50)]
         public string Name { get; set; }
 
-        [StringLength(50)]
+        [StringLength(256)]
         public string Bio { get; set; }
+
+        public string ProfilePicturePath { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {

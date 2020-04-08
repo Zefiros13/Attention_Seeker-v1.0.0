@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -49,16 +50,16 @@ namespace Attention_Seeker.Controllers
         }
 
         [Route("Users/Profile/{id}")]
-        public ActionResult ReadOnlyProfile(string id, string conne)
+        public ActionResult ReadOnlyProfile(string id, string buttonClick)
         {
             var user = _context.Users.SingleOrDefault(u => u.Id == id);
 
             var logedInUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
             var currentUrlId = Url.RequestContext.RouteData.Values["id"].ToString();
 
-            var connInDb = _context.Connections.FirstOrDefault(c => (c.ConnectionReceiver.Id == currentUrlId && c.ConnectionSender.Id == logedInUserId) 
-                                                                 || (c.ConnectionReceiver.Id == logedInUserId && c.ConnectionSender.Id == currentUrlId));
-            if (connInDb == null)
+            var connectionInDb = _context.Connections.FirstOrDefault(c => (c.ConnectionReceiver.Id == currentUrlId && c.ConnectionSender.Id == logedInUserId) 
+                                                                       || (c.ConnectionReceiver.Id == logedInUserId && c.ConnectionSender.Id == currentUrlId));
+            if (connectionInDb == null)
             {
                 var newConnection = new UsersConnection()
                 {
@@ -95,28 +96,28 @@ namespace Attention_Seeker.Controllers
                 var viewModel = new UserConnectionViewModel()
                 {
                     User = user,
-                    Connection = connInDb
+                    Connection = connectionInDb
                 };
-                switch (conne)
+                switch (buttonClick)
                 {
-                    case "ask":
+                    case "sendRequest":
                         {
-                            connInDb.WaitingFlag = true;
+                            connectionInDb.WaitingFlag = true;
                             _context.SaveChanges();
                             return View(viewModel);
                         }
 
-                    case "cancel":
+                    case "cancelRequest":
                         {
-                            connInDb.WaitingFlag = false;
+                            connectionInDb.WaitingFlag = false;
                             _context.SaveChanges();
                             return View(viewModel);
                         }
-                    case "disconnect":
+                    case "-":
                         {
-                            connInDb.WaitingFlag = false;
-                            connInDb.ApproveFlag = false;
-                            _context.Connections.Remove(connInDb);
+                            connectionInDb.WaitingFlag = false;
+                            connectionInDb.ApproveFlag = false;
+                            _context.Connections.Remove(connectionInDb);
                             _context.SaveChanges();
                             return View(viewModel);
                         }
@@ -124,30 +125,41 @@ namespace Attention_Seeker.Controllers
                         return View(viewModel);
 
                 }
-
             }
-
-
-
-            
-
         }
 
 
 
         [HttpPost]
-        public ActionResult Save(ApplicationUser user)
+        public ActionResult Save(ApplicationUser user, HttpPostedFileBase file)
         {
             if (!ModelState.IsValid)
                 return View("EditProfile", user);
-            
-            var userInDb = _context.Users.Single(u => u.Id == user.Id);
 
-            userInDb.Name = user.Name;
-            userInDb.Bio = user.Bio;
-            userInDb.UserName = user.UserName;
+            try
+            {
+                var userInDb = _context.Users.Single(u => u.Id == user.Id);
 
-            _context.SaveChanges();
+                userInDb.Name = user.Name;
+                userInDb.Bio = user.Bio;
+                userInDb.UserName = user.UserName;
+
+                if (file != null && file.ContentLength > 0)
+                {
+                    var path = Path.Combine(Server.MapPath("~/Media/ProfilePictures"), Path.GetFileName(file.FileName));
+                    file.SaveAs(path);
+                    userInDb.ProfilePicturePath= "/Media/ProfilePictures/" + Path.GetFileName(file.FileName).ToString();
+                }
+                else
+                    userInDb.ProfilePicturePath = userInDb.ProfilePicturePath;
+
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Message = "ERROR: " + ex.Message.ToString();
+            }
+
 
             return RedirectToAction("Index", "Users");
 
@@ -158,12 +170,12 @@ namespace Attention_Seeker.Controllers
         {
             var logedInUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
-            var connInDb = _context.Connections.Where(c => c.ConnectionReceiver.Id == logedInUserId && c.WaitingFlag == true && c.ApproveFlag == false).ToList();
+            var connectionsInDb = _context.Connections.Where(c => c.ConnectionReceiver.Id == logedInUserId && c.WaitingFlag == true && c.ApproveFlag == false).ToList();
 
             var viewModel = new UsersConnectionsViewModel
             {
                 Users = _context.Users.ToList(),
-                Connections = connInDb
+                Connections = connectionsInDb
             };
 
             return PartialView(viewModel);
@@ -174,12 +186,12 @@ namespace Attention_Seeker.Controllers
         {
             var logedInUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
 
-            var connections = _context.Connections.Where(c => (c.ConnectionReceiver.Id == logedInUserId || c.ConnectionSender.Id == logedInUserId) && c.ApproveFlag == true).ToList();
+            var currentlyPairedConnections = _context.Connections.Where(c => (c.ConnectionReceiver.Id == logedInUserId || c.ConnectionSender.Id == logedInUserId) && c.ApproveFlag == true).ToList();
 
             var model = new UsersConnectionsViewModel
             {
                 Users = _context.Users.ToList(),
-                Connections = connections
+                Connections = currentlyPairedConnections
             };
 
             return PartialView(model);
