@@ -128,8 +128,6 @@ namespace Attention_Seeker.Controllers
             }
         }
 
-
-
         [HttpPost]
         public ActionResult Save(ApplicationUser user, HttpPostedFileBase file)
         {
