@@ -98,6 +98,7 @@ namespace Attention_Seeker.Controllers
                     User = user,
                     Connection = connectionInDb
                 };
+
                 switch (buttonClick)
                 {
                     case "sendRequest":
@@ -113,7 +114,7 @@ namespace Attention_Seeker.Controllers
                             _context.SaveChanges();
                             return View(viewModel);
                         }
-                    case "-":
+                    case "cancelConnection":
                         {
                             connectionInDb.WaitingFlag = false;
                             connectionInDb.ApproveFlag = false;
@@ -133,34 +134,25 @@ namespace Attention_Seeker.Controllers
         {
             if (!ModelState.IsValid)
                 return View("EditProfile", user);
+            
+            var userInDb = _context.Users.Single(u => u.Id == user.Id);
 
-            try
+            userInDb.Name = user.Name;
+            userInDb.Bio = user.Bio;
+            userInDb.UserName = user.UserName;
+
+            if (file != null && file.ContentLength > 0)
             {
-                var userInDb = _context.Users.Single(u => u.Id == user.Id);
-
-                userInDb.Name = user.Name;
-                userInDb.Bio = user.Bio;
-                userInDb.UserName = user.UserName;
-
-                if (file != null && file.ContentLength > 0)
-                {
-                    var path = Path.Combine(Server.MapPath("~/Media/ProfilePictures"), Path.GetFileName(file.FileName));
-                    file.SaveAs(path);
-                    userInDb.ProfilePicturePath= "/Media/ProfilePictures/" + Path.GetFileName(file.FileName).ToString();
-                }
-                else
-                    userInDb.ProfilePicturePath = userInDb.ProfilePicturePath;
-
-                _context.SaveChanges();
+                var path = Path.Combine(Server.MapPath("~/Media/ProfilePictures"), Path.GetFileName(file.FileName));
+                file.SaveAs(path);
+                userInDb.ProfilePicturePath = "/Media/ProfilePictures/" + Path.GetFileName(file.FileName).ToString();
             }
-            catch (Exception ex)
-            {
-                ViewBag.Message = "ERROR: " + ex.Message.ToString();
-            }
+            else
+                userInDb.ProfilePicturePath = userInDb.ProfilePicturePath;
 
+            _context.SaveChanges();
 
             return RedirectToAction("Index", "Users");
-
         }
 
         [ChildActionOnly]

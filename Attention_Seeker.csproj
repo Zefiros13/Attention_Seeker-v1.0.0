@@ -235,7 +235,6 @@
     <Compile Include="Models\UsersConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\ConnectionsViewModel.cs" />
     <Compile Include="ViewModels\UserConnectionViewModel.cs" />
     <Compile Include="ViewModels\UsersConnectionsViewModel.cs" />
   </ItemGroup>
