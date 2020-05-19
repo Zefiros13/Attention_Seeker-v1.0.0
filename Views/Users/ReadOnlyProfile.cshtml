@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <div>
+    @*<div>*@
         <div style="width:50%; height:100%; padding: 20px; display:inline-block; vertical-align:top;">
             @if(Model.User.ProfilePicturePath == null)
             {
@@ -81,94 +81,69 @@
         @if (Model.Connection.WaitingFlag == false && Model.Connection.ApproveFlag == true)
         {
             <div style="width:10%; display:inline-block;"></div>
-            
-            <div id="audioDiv" style="width:35%; height:100%; padding: 20px; display:inline-block; text-align:center;">
-                <select id="selection" style=" box-shadow: 0px 0px 30px #00b456; border: solid 1px rgba(0, 77, 37, 0.01); border-radius: 30px;">
-                    <option value="">- Select sound -</option>
-                    <option value="~/Media/Sounds/Bike.mp3">Bike bell</option>
-                    <option value="~/Media/Sounds/Christmas.mp3">Christmas bell</option>
-                    <option value="~/Media/Sounds/Christmas2.mp3">Christmas song</option>
-                    <option value="~/Media/Sounds/Church.mp3">Church bell</option>
-                    <option value="~/Media/Sounds/Gleam.mp3">Gleam bell</option>
-                    <option value="~/Media/Sounds/HandBell.mp3">Hand bell</option>
-                    <option value="~/Media/Sounds/Servant.mp3">Servant bell</option>
-                    <option value="~/Media/Sounds/VideoGame.mp3">Video game</option>
-                    <option value="~/Media/Sounds/MachineGun.mp3">Machine gun</option>
-                </select>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <button id="play" style="text-align:center;"><img src="~/Media/Images/Gumb11.jpg" style="width:130px; height:100px; margin:-10px;" /></button>
-                <button id="pause" style="text-align:center; display: none;"><img src="~/Media/Images/Gumb11.jpg" style="width:130px; height:100px; margin:-10px;" /></button>
-                <br />
-                <br />
-                <audio id="player" controls="controls" class="hidden">
-                    <source id="mp3_src" type="audio/mp3" />Your browser does not support audio element.
-                </audio>
-            </div>
 
 
 
-            <script src="~/Scripts/jquery-3.3.1.min.js"></script>
-            <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
-            <script type="text/javascript" src="~/signalr/hubs"></script>
-            <script>
-                $(function () {
-                    var audioHub = $.connection.audioHub;
-                    audioHub.client.sendConnection = function () {
-                        $("#label").val(" has asked you for connection?");
-                    };
-                    $.connection.hub.start().done(function () {
-                        alert("connection start");
-                        $('#btnSendMessage').click(function () {
-                            audioHub.server.playAudio();
-                            $(document).ready(function () {
+            <div style="border: solid 1px #B58900; border-radius:10px; display:inline-block; width:35%; height:450px; padding: 20px;">
 
-                                $('#selection').on('change', function () {
-                                    change($(this).val());
-                                });
+                <div style="max-height: 300px;">
+                <ul id="messages" style="list-style-type:none; margin-left: -40px; max-height: 300px; overflow-y:auto;">
 
-                            });
-
-
-                            function change(sourceUrl) {
-                                var audio = document.getElementById("player");
-                                var source = document.getElementById("mp3_src");
-
-                                $("#play").show();
-                                $("#pause").hide();
-
-                                $('#play').on('click', function () {
-                                    if (sourceUrl) {
-                                        source.src = sourceUrl;
-                                        audio.load();
-                                        audio.play();
-                                        $("#play").hide();
-                                        $("#pause").show();
-                                    }
-                                });
-
-                                $('#pause').on('click', function () {
-                                    audio.pause();
-                                    $("#play").show();
-                                    $("#pause").hide();
-                                });
+                    @if(Model.Connection.Messages != null)
+                    {
+                        foreach (var message in Model.Connection.Messages)
+                        {
+                            if(message.MessageSender != null)
+                            {
+                                <li style=" padding:3px; margin: 2px;"><strong>@message.MessageSender.UserName : </strong> @message.MessageContent.ToString() </li>
                             }
-                        });
-                    });
-                });
-            </script>
-        }
-    </div>
+                            else
+                            {
+                                <li style="padding:3px; margin: 2px;"><strong><span style="color:#B58900;">You: </span></strong> @message.MessageContent.ToString() </li>
+                            }
+                        }
+                    }
+                </ul>
+                </div> <br />
+
+                @using (Html.BeginForm("SendMessage", "Users", FormMethod.Post))
+                {
+                    <div class="form-group">
+                        <input type="text" id="message" name="message" class="form-control" placeholder="Write message..." /> <br />
+                    </div>
+                    <button type="submit" id="sendMessage" class="btn btn-primary">Send</button>
+                }
+                
+                
+
+                <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+                <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+                <script type="text/javascript" src="~/signalR/hubs"></script>
+                <script>
+                    const messages = document.getElementById("messages");
+
+                    function scrollToBottom() {
+                        messages.scrollTop = messages.scrollHeight;
+                    }
+
+                    function appendMessage() {
+                        const message = document.getElementsByClassName('message')[0];
+                        const newMessage = message.cloneNode(true);
+                        messages.appendChild(newMessage);
+                    }
+
+                    function getMessages() {
+                        shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
+                        appendMessage();
+                        if (!shouldScroll) {
+                            scrollToBottom();
+                        }
+                    }
+                    scrollToBottom();
+
+                    setInterval(getMessages, 100);
+                </script>
+
+            </div>
+         }
         @Html.HiddenFor(m => m.Connection.Id)
-
-            
-
-@section scripts
-{
-    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
-    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
-    <script src="~/Scripts/AudioPlayer.js"> </script>
-}

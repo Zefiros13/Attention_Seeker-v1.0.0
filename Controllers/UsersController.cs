@@ -70,12 +70,14 @@ namespace Attention_Seeker.Controllers
                     RejectFlag = false,
                     BlockFlag = false,
                     SpamFlag = false,
-                    DateCreated = DateTime.Now
+                    DateCreated = DateTime.Now,
+                    Messages = new List<Message>()
                 };
 
                 _context.Connections.Add(newConnection);
                 _context.SaveChanges();
 
+                //never tested, should delete unused connection after 2 days-
                 //var timeLimit = new TimeSpan(48, 0, 0);
                 //if (newConnection.WaitingFlag == false && newConnection.ApproveFlag == false && newConnection.DateCreated + timeLimit > DateTime.Now)
                 //{
@@ -86,7 +88,8 @@ namespace Attention_Seeker.Controllers
                 var viewModel = new UserConnectionViewModel()
                 {
                     User = user,
-                    Connection = newConnection
+                    Connection = newConnection,
+                    Messages = newConnection.Messages
                 };
 
                 return View(viewModel);
@@ -96,7 +99,8 @@ namespace Attention_Seeker.Controllers
                 var viewModel = new UserConnectionViewModel()
                 {
                     User = user,
-                    Connection = connectionInDb
+                    Connection = connectionInDb,
+                    Messages = _context.Messages.Where(c => c.Connection.Id == connectionInDb.Id).ToList()
                 };
 
                 switch (buttonClick)
@@ -186,6 +190,23 @@ namespace Attention_Seeker.Controllers
 
             return PartialView(model);
         }
+
+        [ChildActionOnly]
+        public ActionResult _NewMessages()
+        {
+            var logedInUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+            var connectionsInDb = _context.Connections.Where(c => (c.ConnectionReceiver.Id == logedInUserId && c.WaitingFlag == false && c.ApproveFlag == true) 
+                                                                          ||(c.ConnectionSender.Id == logedInUserId && c.WaitingFlag == false && c.ApproveFlag == true)).ToList();
+            var messages = _context.Messages.Where(m => m.MessageReceiver.Id == logedInUserId).Where(m => m.IsSeen == false && m.Connection != null).ToList();
+
+            var viewModel = new UsersMessagesViewModel
+            {
+                Users = _context.Users.ToList(),
+                Messages = messages
+            };
+
+            return PartialView(viewModel);
+        }
         
         public ActionResult Approve(int Id)
         {
@@ -209,8 +230,45 @@ namespace Attention_Seeker.Controllers
             return RedirectToAction("Index", "Users");
         }
 
+        public ActionResult SeeNewMessage(string Id)
+        {
+            var currentUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+            var messages = _context.Messages.Where(m => (m.MessageSender.Id == Id && m.MessageReceiver.Id == currentUserId) 
+                                                      ||(m.MessageSender.Id == currentUserId && m.MessageReceiver.Id == Id));
 
+            foreach(var message in messages)
+            {
+                message.IsSeen = true;
+            }
+            
+            _context.SaveChanges();
 
+            return RedirectToAction("ReadOnlyProfile", "Users");
+        }
+
+        [HttpPost]
+        [Route("Chat/{id}")]
+        public ActionResult SendMessage(string id, string message)
+        {
+            var currentUserId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+
+            var connection = _context.Connections.SingleOrDefault(c => (c.ConnectionReceiver.Id == currentUserId && c.ConnectionSender.Id == id)
+                                                                    || (c.ConnectionReceiver.Id == id && c.ConnectionSender.Id == currentUserId));
+
+            var newMessage = new Message
+            {
+                Connection = connection,
+                MessageSender = _context.Users.SingleOrDefault(u => u.Id == currentUserId),
+                MessageReceiver = _context.Users.SingleOrDefault(u => u.Id == id),
+                MessageContent = message,
+                IsSeen = false
+            };
+
+            _context.Messages.Add(newMessage);
+            _context.SaveChanges();
+
+            return RedirectToAction("ReadOnlyProfile", "Users");
+        }
 
     }
 }

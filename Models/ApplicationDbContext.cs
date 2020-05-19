@@ -7,6 +7,7 @@ namespace Attention_Seeker.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<UsersConnection> Connections { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

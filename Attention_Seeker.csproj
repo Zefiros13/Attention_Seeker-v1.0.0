@@ -226,17 +226,40 @@
     <Compile Include="Migrations\202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.Designer.cs">
       <DependentUpon>202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005171355581_AddListOfMessagesToUsersConnectionTable.cs" />
+    <Compile Include="Migrations\202005171355581_AddListOfMessagesToUsersConnectionTable.Designer.cs">
+      <DependentUpon>202005171355581_AddListOfMessagesToUsersConnectionTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005171636367_AddMessagesTable.cs" />
+    <Compile Include="Migrations\202005171636367_AddMessagesTable.Designer.cs">
+      <DependentUpon>202005171636367_AddMessagesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005171656507_ChangeMessagesColumnTypeFromStringToMessages.cs" />
+    <Compile Include="Migrations\202005171656507_ChangeMessagesColumnTypeFromStringToMessages.Designer.cs">
+      <DependentUpon>202005171656507_ChangeMessagesColumnTypeFromStringToMessages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005181408549_AddIsSeenColumnToMessagesTable.cs" />
+    <Compile Include="Migrations\202005181408549_AddIsSeenColumnToMessagesTable.Designer.cs">
+      <DependentUpon>202005181408549_AddIsSeenColumnToMessagesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005181420506_AddMessageReceiverColumnToMessagesTable.cs" />
+    <Compile Include="Migrations\202005181420506_AddMessageReceiverColumnToMessagesTable.Designer.cs">
+      <DependentUpon>202005181420506_AddMessageReceiverColumnToMessagesTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\Chat.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Models\PasswordHistory.cs" />
     <Compile Include="Models\UsersConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\UserConnectionViewModel.cs" />
     <Compile Include="ViewModels\UsersConnectionsViewModel.cs" />
+    <Compile Include="ViewModels\UsersMessagesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-solar.css" />
@@ -552,6 +575,7 @@
     <Content Include="Views\Users\ReadOnlyProfile.cshtml" />
     <Content Include="Views\Users\_Connections.cshtml" />
     <Content Include="Views\Users\_CurrentlyPaired.cshtml" />
+    <Content Include="Views\Users\_NewMessages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -595,6 +619,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.resx">
       <DependentUpon>202004080933511_ChangePathColumnNameToProfilePicturePathInUsersTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005171355581_AddListOfMessagesToUsersConnectionTable.resx">
+      <DependentUpon>202005171355581_AddListOfMessagesToUsersConnectionTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005171636367_AddMessagesTable.resx">
+      <DependentUpon>202005171636367_AddMessagesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005171656507_ChangeMessagesColumnTypeFromStringToMessages.resx">
+      <DependentUpon>202005171656507_ChangeMessagesColumnTypeFromStringToMessages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005181408549_AddIsSeenColumnToMessagesTable.resx">
+      <DependentUpon>202005181408549_AddIsSeenColumnToMessagesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005181420506_AddMessageReceiverColumnToMessagesTable.resx">
+      <DependentUpon>202005181420506_AddMessageReceiverColumnToMessagesTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

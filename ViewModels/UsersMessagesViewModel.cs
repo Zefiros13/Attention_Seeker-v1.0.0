@@ -6,11 +6,9 @@ using System.Web;
 
 namespace Attention_Seeker.ViewModels
 {
-    public class UserConnectionViewModel
+    public class UsersMessagesViewModel
     {
-        public ApplicationUser User { get; set; }
-
-        public UsersConnection Connection { get; set; }
+        public List<ApplicationUser> Users { get; set; }
 
         public List<Message> Messages { get; set; }
     }

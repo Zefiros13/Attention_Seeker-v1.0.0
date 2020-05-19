@@ -34,5 +34,7 @@ namespace Attention_Seeker.Models
         public bool SpamFlag { get; set; }
 
         public DateTime DateCreated { get; set; }
+
+        public List<Message> Messages { get; set; }
     }
 }

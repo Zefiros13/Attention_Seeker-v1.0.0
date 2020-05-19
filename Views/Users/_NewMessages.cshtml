@@ -1,0 +1,25 @@
+﻿@using Attention_Seeker.Models;
+
+<div style="width:15%; height:100%; padding: 20px; display:inline-block; vertical-align:top;">
+    <a class="btn btn-primary navbar-brand" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="position: absolute; top: 49%; left: 56%; height: 30px;">New Messages</a>
+    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; top: 59%; left: 52%; will-change: transform; height: auto; max-height: 385px; overflow-x: hidden;">
+        @if (Model.Messages.Count == 0)
+        {
+            <div style="margin: 5px; width:200px; height: 70px; background-color: #073642; text-align:center; padding:15px; margin-right:15px;">
+                <label style="color:#B58900;">You don't have any new messages.</label>
+            </div>
+        }
+
+        @if (@Model != null)
+        {
+
+            foreach (Message sender in Model.Messages)
+            {
+                    <div style="margin: 5px; width:200px; height: 70px; background-color: #073642; border: 1px solid #B58900; border-radius:5px; text-align:center; padding:1px; margin-right:15px;">
+                        <label>New message from @sender.MessageSender.UserName</label>
+                        @Html.ActionLink("See message?", "SeeNewMessage", new { Id = sender.MessageSender.Id}, new { @class = "btn btn-primary"})
+                    </div>
+            }
+        }
+    </div>
+</div>
